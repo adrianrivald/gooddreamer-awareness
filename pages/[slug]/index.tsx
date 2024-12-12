@@ -28,8 +28,8 @@ export default function DetailPage() {
           </div>
         </div>
         <footer className="fixed bottom-0 bg-white p-4 w-full">
-          <button className="p-4 rounded-lg bg-[#6C4E9A] w-full text-white font-bold">
-            Lanjutkan membaca
+          <button className="p-4 text-3xl rounded-lg bg-[#6C4E9A] w-full text-white font-bold">
+            👉LANJUTKAN MEMBACA👈
           </button>
         </footer>
       </main>
