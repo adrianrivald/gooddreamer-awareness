@@ -14,14 +14,20 @@ import { dummyContent } from "../../constants/dummyData";
 
 const HOSTURL = process.env.NEXT_PUBLIC_HOST_URL as string;
 const URL = process.env.NEXT_PUBLIC_API_URL;
+const playStoreURL =
+  "https://play.google.com/store/apps/details?id=id.gooddreamer.novel&hl=id";
+const appStoreURL = "https://apps.apple.com/id/app/gooddreamer/id6443961969";
 
 export default function DetailPage() {
   const { model: ipadModel } = useIpad();
   const { model: iphoneModel } = useIphone();
   const [isFetching, setIsFetching] = React.useState(true);
-  const [isUriInvalid, setIsUriInvalid] = React.useState(true);
+  const [isUriInvalid, setIsUriInvalid] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const [errMessage, setErrMessage] = React.useState("");
+  const [devicePlatform, setDevicePlatform] = React.useState("");
+  const [uuid, setUuid] = React.useState("");
+  const [deviceWidth, setDeviceWidth] = React.useState(0);
   const router = useRouter();
   const { query } = router;
   const uri = query?.slug;
@@ -104,11 +110,6 @@ export default function DetailPage() {
               });
 
               if (Object.keys(info).length > 0) {
-                const playStoreURL =
-                  "https://play.google.com/store/apps/details?id=id.gooddreamer.novel&hl=id";
-                const appStoreURL =
-                  "https://apps.apple.com/id/app/gooddreamer/id6443961969";
-
                 const postDefferedLink = async () => {
                   try {
                     await fetch(`${URL}deferred-link/click`, {
@@ -120,6 +121,9 @@ export default function DetailPage() {
                     }).then(
                       (res) =>
                         res.json().then((val) => {
+                          setDevicePlatform(payload?.os?.toLowerCase());
+                          setUuid(val?.data?.uuid);
+                          setDeviceWidth(payload?.device_width);
                           if (
                             val?.message !== "DeferredLink tidak ditemukan."
                           ) {
@@ -139,6 +143,7 @@ export default function DetailPage() {
                             // Redirect without condition (with isRedir param)
                             // else {
                             if (payload?.os?.toLowerCase() === "android") {
+                              getContentDetail();
                               // window.location.href = `intent://affiliate/${val?.data?.uuid}#Intent;scheme=gooddreamer;package=id.gooddreamer.novel;S.browser_fallback_url=${playStoreURL};end`;
                             } else if (
                               payload?.os.toLowerCase() === "ios" ||
@@ -159,9 +164,12 @@ export default function DetailPage() {
                               //   "",
                               //   `${window.location.pathname}?redir=true`
                               // );
+
                               // Disabled
                               // window.location.href =
                               //   window.location.pathname + "?redir=true";
+                              // Disabled
+
                               // router.push({
                               //   pathname: `/${uri}`,
                               //   query: {
@@ -281,6 +289,40 @@ export default function DetailPage() {
     );
   };
 
+  // Post log
+  const postAwarenessLog = async (destination: string) => {
+    await fetch(`${URL}awareness/${uri}`, {
+      method: "POST",
+      body: JSON.stringify({
+        destination: destination,
+      }),
+    }).then((res) =>
+      res.json().then(() => {
+        if (destination === "android") {
+          window.location.href = `intent://affiliate/${uuid}#Intent;scheme=gooddreamer;package=id.gooddreamer.novel;S.browser_fallback_url=${playStoreURL};end`;
+        } else if (
+          devicePlatform === "ios" ||
+          (devicePlatform === "os x" && deviceWidth <= 1024)
+        ) {
+          setTimeout(function () {
+            window.location.href = HOSTURL + `affiliate/${uuid}`;
+          }, 25);
+          window.location.href = redirectedURL + `affiliate/${uuid}`;
+        } else {
+          window.location.href = window.location.pathname + "?redir=true";
+        }
+      })
+    );
+  };
+
+  const onClickContinue = async () => {
+    await postAwarenessLog(
+      devicePlatform === "android" || devicePlatform === "ios"
+        ? devicePlatform
+        : "desktop"
+    );
+  };
+
   useEffect(() => {
     // initiate to send data
     if (uri !== undefined && router.query["isOpenApp"] === undefined)
@@ -320,12 +362,18 @@ export default function DetailPage() {
                   <p className="mt-4 text-2xl leading-10">
                     {contentDetail?.content}
                   </p>
-                  <div className="my-16 flex justify-center text-[#6C4E9A] text-3xl underline font-bold">
+                  <div
+                    onClick={onClickContinue}
+                    className="my-16 flex justify-center text-[#6C4E9A] text-3xl underline font-bold"
+                  >
                     Klik Bab Berikutnya
                   </div>
                 </div>
                 <footer className="fixed bottom-0 bg-white p-4 w-full">
-                  <button className="p-4 text-3xl rounded-lg bg-[#6C4E9A] w-full text-white font-bold">
+                  <button
+                    onClick={onClickContinue}
+                    className="p-4 text-3xl rounded-lg bg-[#6C4E9A] w-full text-white font-bold"
+                  >
                     👉LANJUTKAN MEMBACA👈
                   </button>
                 </footer>
