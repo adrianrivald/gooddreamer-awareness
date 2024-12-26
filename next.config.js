@@ -9,18 +9,6 @@ const nextConfig = {
         destination: process.env.NEXT_PUBLIC_HOST_URL,
         permanent: false,
       },
-      {
-        source: "/:slug",
-        destination: process.env.NEXT_PUBLIC_HOST_URL,
-        has: [
-          {
-            type: "query",
-            key: "redir",
-            value: "true",
-          },
-        ],
-        permanent: false,
-      },
     ];
   },
 };
