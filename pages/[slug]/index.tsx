@@ -299,15 +299,12 @@ export default function DetailPage() {
     }).then((res) =>
       res.json().then(() => {
         if (destination === "android") {
-          window.location.href = `intent://affiliate/${uuid}#Intent;scheme=gooddreamer;package=id.gooddreamer.novel;S.browser_fallback_url=${playStoreURL};end`;
+          window.location.href = playStoreURL;
         } else if (
           devicePlatform === "ios" ||
           (devicePlatform === "os x" && deviceWidth <= 1024)
         ) {
-          setTimeout(function () {
-            window.location.href = HOSTURL + `affiliate/${uuid}`;
-          }, 25);
-          window.location.href = redirectedURL + `affiliate/${uuid}`;
+          window.location.href = appStoreURL;
         } else {
           window.location.href = window.location.pathname + "?redir=true";
         }
