@@ -293,6 +293,7 @@ export default function DetailPage() {
   const postAwarenessLog = async (destination: string) => {
     await fetch(`${URL}awareness/${uri}/log`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         destination: destination,
       }),
