@@ -307,7 +307,7 @@ export default function DetailPage() {
         ) {
           window.location.href = appStoreURL;
         } else {
-          window.location.href = window.location.pathname + "?redir=true";
+          window.location.href = HOSTURL;
         }
       })
     );
