@@ -327,6 +327,9 @@ export default function DetailPage() {
       retrieveData();
   }, [router]);
 
+  const today = new Date();
+  const formattedDate = today.toISOString().split("T")[0];
+
   return (
     <>
       <Helmet>
@@ -353,11 +356,18 @@ export default function DetailPage() {
                   <p className="text-2xl mt-8 text-[#68696a]">
                     {contentDetail?.subtitle}
                   </p>
+                  <div className="my-6 flex items-center gap-2">
+                    <img src="/images/logo.svg" width={175} />•
+                    <span>{formattedDate}</span>
+                  </div>
                   <img
                     src={contentDetail?.banner}
                     className="flex justify-center w-full mt-4"
                   />
-                  <p className="mt-4 text-2xl leading-10">
+                  <p
+                    className="mt-4 text-2xl leading-10"
+                    style={{ whiteSpace: "pre-line" }}
+                  >
                     {contentDetail?.content}
                   </p>
                   <div
